@@ -31,19 +31,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         
-        # Отправляем приветствие
+        # Отправляем приветствие с кнопкой для открытия мини-приложения
         await update.message.reply_text(
             f"Привет, {user_first_name}! У тебя новое приглашение:",
             reply_markup=reply_markup
-        )
-        
-        # Автоматически открываем мини-приложение
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text="Открываю приглашение...",
-            reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton(text="Нажми здесь, если приложение не открылось", web_app=WebAppInfo(url=WEBAPP_URL))]
-            ])
         )
     else:
         # Если URL не HTTPS, отправляем сообщение с инструкцией
