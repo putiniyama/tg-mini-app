@@ -22,30 +22,49 @@ is_https = WEBAPP_URL.startswith("https://")
 
 # Функция обработки команды /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_first_name = update.effective_user.first_name
+    
     if is_https:
         # Создаем кнопку для запуска мини-приложения
         keyboard = [
-            [InlineKeyboardButton("Запустить приложение", web_app=WebAppInfo(url=WEBAPP_URL))]
+            [InlineKeyboardButton("Открыть приглашение 🍷", web_app=WebAppInfo(url=WEBAPP_URL))]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         
+        # Отправляем приветствие
         await update.message.reply_text(
-            "Привет! Нажмите на кнопку ниже, чтобы открыть мини-приложение:",
+            f"Привет, {user_first_name}! У тебя новое приглашение:",
             reply_markup=reply_markup
+        )
+        
+        # Автоматически открываем мини-приложение
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="Открываю приглашение...",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton(text="Нажми здесь, если приложение не открылось", web_app=WebAppInfo(url=WEBAPP_URL))]
+            ])
         )
     else:
         # Если URL не HTTPS, отправляем сообщение с инструкцией
         await update.message.reply_text(
-            f"Привет! Mini App требует HTTPS URL.\n\n"
+            f"Привет, {user_first_name}! Mini App требует HTTPS URL.\n\n"
             f"Текущий URL: {WEBAPP_URL}\n\n"
-            f"Пожалуйста, настройте ngrok, добавив ваш токен в .env файл:\n"
-            f"NGROK_AUTHTOKEN=ваш_токен_ngrok\n\n"
-            f"Получить токен можно на: https://dashboard.ngrok.com/get-started/your-authtoken"
+            f"Пожалуйста, разместите приложение на сервисе с HTTPS (GitHub Pages, Netlify и т.д.)"
         )
 
 # Функция обработки текстовых сообщений
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await start(update, context)
+
+# Обработчик данных от мини-приложения
+async def handle_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    data = update.effective_message.web_app_data.data
+    
+    if data == "accepted":
+        await update.message.reply_text("Отлично! Буду ждать тебя с вином! 🍷")
+    else:
+        await update.message.reply_text(f"Получены данные: {data}")
 
 def main():
     # Создаем экземпляр приложения, передаем токен бота
@@ -56,6 +75,9 @@ def main():
     
     # Регистрируем обработчик для всех текстовых сообщений
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+    
+    # Регистрируем обработчик для данных от мини-приложения
+    app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_webapp_data))
     
     # Запускаем бота
     print("Бот запущен")
