@@ -1,0 +1,72 @@
+# Виртуальное окружение Python
+venv/
+env/
+.env-*/
+.venv/
+.env/
+
+# Файлы Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Логи
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Файлы окружения
+.env
+.env.local
+.env.test
+.env.production
+
+# SSL сертификаты
+certs/
+*.pem
+*.key
+*.crt
+
+# Docker
+.dockerignore
+.docker/
+
+# ngrok
+.ngrok/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Разное
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+coverage/
+node_modules/ 

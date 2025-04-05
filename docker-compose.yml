@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  webapp:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+      - ./certs:/app/certs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DOCKER_ENV=true
+    networks:
+      - teleapp-network
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./certs:/etc/nginx/certs
+    depends_on:
+      - webapp
+    networks:
+      - teleapp-network
+    restart: unless-stopped
+
+networks:
+  teleapp-network:
+    driver: bridge 
